@@ -1,8 +1,10 @@
-FROM maven:3.8.5-openjdk-17 AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM openjdk:17.0.1-jdk-slim
-COPY --from=build /target/*.war app.war
+FROM tomcat:10.1-jdk17
+COPY --from=build /app/target/captcha.war /usr/local/tomcat/webapps/ROOT.war
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.war"]
+
+CMD ["catalina.sh", "run"]
