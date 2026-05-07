@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+    
+    <display-name>Sistema de Gestión de Vacunación</display-name>
+
+    <!-- Configuración de internacionalización -->
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>messages</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
+        <param-value>es</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>LocaleFilter</filter-name>
+        <filter-class>sena.adso.captcha.util.LocaleFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LocaleFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>sena.adso.captcha.util.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/dashboard</url-pattern>
+        <url-pattern>/pacientes</url-pattern>
+        <url-pattern>/vacunas</url-pattern>
+        <url-pattern>/registros</url-pattern>
+        <url-pattern>/usuarios</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DashboardServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.DashboardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DashboardServlet</servlet-name>
+        <url-pattern>/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>PacienteServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.PacienteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PacienteServlet</servlet-name>
+        <url-pattern>/pacientes</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>VacunaServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.VacunaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VacunaServlet</servlet-name>
+        <url-pattern>/vacunas</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RegistroVacunacionServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.RegistroVacunacionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegistroVacunacionServlet</servlet-name>
+        <url-pattern>/registros</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UsuarioServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.UsuarioServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UsuarioServlet</servlet-name>
+        <url-pattern>/usuarios</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ConsultaPublicaServlet</servlet-name>
+        <servlet-class>sena.adso.captcha.controller.ConsultaPublicaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConsultaPublicaServlet</servlet-name>
+        <url-pattern>/consulta</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Configuración de bienvenida -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    
+    <!-- Configuración de sesión -->
+    <session-config>
+        <session-timeout>30</session-timeout> <!-- 30 minutos -->
+    </session-config>
+    
+    <!-- Página de error personalizada -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/error.jsp</location>
+    </error-page>
+    
+</web-app>

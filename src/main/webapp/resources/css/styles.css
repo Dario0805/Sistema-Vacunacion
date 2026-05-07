@@ -1,0 +1,363 @@
+:root {
+    --primary: #1A5276;
+    --primary-dark: #154360;
+    --secondary: #39A900;
+    --accent: #2E86C1;
+    --bg: #EAF0F7;
+    --white: #FFFFFF;
+    --text: #2C3E50;
+    --muted: #7F8C8D;
+    --warning: #F39C12;
+    --danger: #E74C3C;
+    --info: #2980B9;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background: linear-gradient(90deg, var(--primary), var(--accent)) !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+/* Sidebar */
+.sidebar {
+    background: var(--primary-dark) !important;
+    min-height: calc(100vh - 56px);
+    box-shadow: 4px 0 18px rgba(0,0,0,0.12);
+}
+
+.sidebar .nav-link {
+    color: #dce9f3;
+    border-radius: 12px;
+    margin: 6px 10px;
+    padding: 12px 15px;
+    transition: all .25s ease;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    transform: translateX(4px);
+}
+
+.sidebar .nav-link.active {
+    background: var(--secondary);
+    color: white;
+    font-weight: 700;
+}
+
+.sidebar .nav-link i {
+    margin-right: 10px;
+}
+
+/* Contenido */
+.main-content {
+    background: var(--bg);
+    padding: 25px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+/* Cards */
+.card {
+    border: 0;
+    border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    transition: all .25s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.13);
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid #e7edf3;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Tarjetas estadísticas */
+.border-left-primary {
+    border-left: 6px solid var(--primary) !important;
+}
+
+.border-left-success {
+    border-left: 6px solid var(--secondary) !important;
+}
+
+.border-left-info {
+    border-left: 6px solid var(--accent) !important;
+}
+
+.border-left-warning {
+    border-left: 6px solid var(--warning) !important;
+}
+
+.text-gray-300 {
+    color: #c7d3df !important;
+}
+
+.text-gray-800 {
+    color: var(--text) !important;
+}
+
+.text-xs {
+    font-size: .78rem;
+}
+
+.font-weight-bold {
+    font-weight: 700;
+}
+
+/* Botones */
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all .25s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-success {
+    background: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.btn-info {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.btn-circle {
+    width: 62px;
+    height: 62px;
+    padding: 0;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 22px;
+    line-height: 62px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.btn-circle:hover {
+    transform: scale(1.08);
+}
+
+/* Tablas */
+.table {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: var(--primary);
+    color: white;
+}
+
+.table th {
+    font-weight: 700;
+    border: none;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background: #f0f7fc;
+}
+
+/* DataTables */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    margin-bottom: 12px;
+    color: var(--muted);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--primary) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.current):hover {
+    background: #dcebf6 !important;
+    color: var(--primary-dark) !important;
+    border-radius: 10px;
+}
+
+/* Formularios */
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid #cfd8e3;
+    padding: 10px 12px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 .25rem rgba(46, 134, 193, .22);
+}
+
+.input-group-text {
+    border-radius: 12px 0 0 12px;
+    background: #edf4fa;
+    color: var(--primary);
+    border-color: #cfd8e3;
+}
+
+/* Alertas */
+.alert {
+    border: 0;
+    border-radius: 14px;
+    animation: fadeIn .45s ease;
+}
+
+.alert-success {
+    background: #D5F5E3;
+    color: #145A32;
+}
+
+.alert-danger {
+    background: #FADBD8;
+    color: #922B21;
+}
+
+/* Login */
+.login-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.login-card {
+    max-width: 440px;
+    width: 100%;
+    padding: 28px;
+    border-radius: 22px;
+    background: white;
+    box-shadow: 0 18px 45px rgba(0,0,0,.22);
+}
+
+.login-title {
+    text-align: center;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 24px;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.logo-container img {
+    max-width: 130px;
+}
+
+.captcha-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.captcha-img {
+    border: 1px solid #d9e2ec;
+    border-radius: 12px;
+    padding: 5px;
+    background: #fff;
+    max-width: 100%;
+}
+
+.btn-refresh {
+    display: inline-block;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 24px;
+    margin-top: 10px;
+}
+
+/* Badges estados */
+.badge-estado-programada {
+    background: var(--warning);
+    color: white;
+}
+
+.badge-estado-confirmada {
+    background: #27AE60;
+    color: white;
+}
+
+.badge-estado-atendida {
+    background: var(--info);
+    color: white;
+}
+
+.badge-estado-cancelada {
+    background: var(--danger);
+    color: white;
+}
+
+/* Modal */
+.modal-content {
+    border: 0;
+    border-radius: 18px;
+}
+
+.modal-header {
+    background: var(--primary);
+    color: white;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
