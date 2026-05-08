@@ -79,10 +79,10 @@ public class LoginServlet extends HttpServlet {
                 String generatedOTP = String.valueOf(OTP_RANDOM.nextInt(900000) + 100000);
 
                 try {
-                    // RE-ACTIVADO: Envío real al correo
+                    // Envío real al correo
                     enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
                     
-                    // Mantenemos el log por si necesitas verificar en consola
+                    // Log de respaldo en Render
                     System.out.println("DEBUG OTP ENVIADO A " + usuario.getEmail() + ": " + generatedOTP);
                     
                     session.setAttribute("otpCode", generatedOTP);
@@ -129,14 +129,14 @@ public class LoginServlet extends HttpServlet {
         props.put("mail.smtp.socketFactory.port", "465");
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         
-        // Protocolos de seguridad para servidores en la nube
+        // --- CAMBIOS DE SEGURIDAD PARA RENDER ---
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
         
-        // Tiempos de espera aumentados para Render
-        props.put("mail.smtp.connectiontimeout", "15000"); 
-        props.put("mail.smtp.timeout", "15000");
-        props.put("mail.smtp.writetimeout", "15000");
+        // Aumentamos los tiempos por la latencia de red
+        props.put("mail.smtp.connectiontimeout", "20000"); 
+        props.put("mail.smtp.timeout", "20000");
+        props.put("mail.smtp.writetimeout", "20000");
 
         jakarta.mail.Session mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
             @Override
@@ -147,9 +147,12 @@ public class LoginServlet extends HttpServlet {
 
         Message mensaje = new MimeMessage(mailSession);
         mensaje.setFrom(new InternetAddress(correoRemitente));
-        mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-        mensaje.setSubject("Tu código OTP de seguridad");
-        mensaje.setText("Hola,\n\nTu código de verificación es: " + otp + "\n\nSi no solicitaste este código, ignora este mensaje.");
+        
+        // Convertimos a minúsculas para asegurar compatibilidad total
+        mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario.toLowerCase().trim()));
+        
+        mensaje.setSubject("Código de Verificación - Sistema de Vacunación");
+        mensaje.setText("Hola,\n\nTu código de verificación es: " + otp + "\n\nSi no solicitaste este acceso, por favor ignora este mensaje.");
 
         Transport.send(mensaje);
     }
