@@ -8,12 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import sena.adso.captcha.dto.Usuario;
 import sena.adso.captcha.model.Conexion;
-// IMPORTANTE: Asegúrate de tener la librería jbcrypt en tu pom.xml
-import org.mindrot.jbcrypt.BCrypt;
+import org.mindrot.jbcrypt.BCrypt; // Importación necesaria
 
 public class UsuarioDAO {
-
-    // ... (Mantén los métodos insertar, actualizar, eliminar e obtenerPorId igual) ...
 
     public Usuario validarLogin(String username, String password) {
         Connection conn = null;
@@ -25,40 +22,49 @@ public class UsuarioDAO {
             username = (username != null) ? username.trim() : "";
             password = (password != null) ? password.trim() : "";
 
-            System.out.println("Intentando login para: [" + username + "]");
-
             conn = Conexion.getConnection();
             
-            // BUSCAMOS SOLO POR USUARIO (No por password en el SQL)
+            // Buscamos solo por nombre de usuario
             String sql = "SELECT * FROM usuarios WHERE username = ?";
-
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                String passwordEnBD = rs.getString("password");
-
-                // COMPARACIÓN DE SEGURIDAD:
-                // Comprobamos si la clave escrita coincide con la encriptada ($2a$10...)
-                if (BCrypt.checkpw(password, passwordEnBD)) {
-                    System.out.println("Login exitoso: Contraseña correcta");
+                String hashedPass = rs.getString("password");
+                
+                // Comparamos la clave ingresada con la de la base de datos
+                if (BCrypt.checkpw(password, hashedPass)) {
                     usuario = mapearUsuario(rs);
-                } else {
-                    System.out.println("Login fallido: Contraseña incorrecta");
                 }
-            } else {
-                System.out.println("Login fallido: Usuario no existe");
             }
-
         } catch (SQLException ex) {
             System.err.println("Error al validar login: " + ex.getMessage());
         } finally {
             cerrar(rs, stmt, conn);
         }
-
         return usuario;
     }
 
-    // ... (Mantén los métodos obtenerTodos, mapearUsuario y cerrar igual) ...
+    // Métodos de apoyo
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        Usuario usuario = new Usuario();
+        usuario.setId(rs.getInt("id"));
+        usuario.setNombres(rs.getString("nombres"));
+        usuario.setApellidos(rs.getString("apellidos"));
+        usuario.setEmail(rs.getString("email"));
+        usuario.setUsername(rs.getString("username"));
+        usuario.setRol(rs.getString("rol"));
+        return usuario;
+    }
+
+    private void cerrar(ResultSet rs, PreparedStatement stmt, Connection conn) {
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            Conexion.closeConnection(conn);
+        } catch (SQLException ex) {
+            System.err.println("Error al cerrar: " + ex.getMessage());
+        }
+    }
 }
