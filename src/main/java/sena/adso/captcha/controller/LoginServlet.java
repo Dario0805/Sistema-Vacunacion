@@ -79,7 +79,14 @@ public class LoginServlet extends HttpServlet {
                 String generatedOTP = String.valueOf(OTP_RANDOM.nextInt(900000) + 100000);
 
                 try {
-                    enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
+                    // --- TRAMPA DE DESARROLLO PARA RENDER ---
+                    // Comentamos el envío real para que no de error de conexión
+                    // enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
+                    
+                    // Imprimimos el código en los logs de Render
+                    System.out.println("******************************************");
+                    System.out.println("DEBUG OTP PARA " + usuario.getUsername() + ": " + generatedOTP);
+                    System.out.println("******************************************");
                     
                     session.setAttribute("otpCode", generatedOTP);
                     session.setAttribute("tempUser", usuario);
@@ -88,7 +95,7 @@ public class LoginServlet extends HttpServlet {
                     
                 } catch (Exception e) {
                     System.err.println("Error enviando OTP: " + e.getMessage());
-                    request.setAttribute("error", "Error al enviar el correo: " + e.getMessage());
+                    request.setAttribute("error", "Error al procesar seguridad: " + e.getMessage());
                     request.getRequestDispatcher("/views/login.jsp").forward(request, response);
                 }
 
@@ -114,6 +121,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     private void enviarOtpPorCorreo(String destinatario, String otp) throws MessagingException {
+        // Mantengo el método por si lo usas localmente, pero en Render no conectará
         final String correoRemitente = "clinipetadso@gmail.com";
         final String claveAplicacion = "qqzopsuxfmdcswmy";
 
@@ -124,14 +132,8 @@ public class LoginServlet extends HttpServlet {
         props.put("mail.smtp.ssl.enable", "true");
         props.put("mail.smtp.socketFactory.port", "465");
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        
-        // --- CAMBIOS AGREGADOS PARA COMPATIBILIDAD CON RENDER ---
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-        // -------------------------------------------------------
-
-        props.put("mail.smtp.connectiontimeout", "10000"); // Aumentado a 10s para mayor margen
-        props.put("mail.smtp.timeout", "10000");
 
         jakarta.mail.Session mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
             @Override
