@@ -79,14 +79,11 @@ public class LoginServlet extends HttpServlet {
                 String generatedOTP = String.valueOf(OTP_RANDOM.nextInt(900000) + 100000);
 
                 try {
-                    // --- TRAMPA DE DESARROLLO PARA RENDER ---
-                    // Comentamos el envío real para que no de error de conexión
-                    // enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
+                    // RE-ACTIVADO: Envío real al correo
+                    enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
                     
-                    // Imprimimos el código en los logs de Render
-                    System.out.println("******************************************");
-                    System.out.println("DEBUG OTP PARA " + usuario.getUsername() + ": " + generatedOTP);
-                    System.out.println("******************************************");
+                    // Mantenemos el log por si necesitas verificar en consola
+                    System.out.println("DEBUG OTP ENVIADO A " + usuario.getEmail() + ": " + generatedOTP);
                     
                     session.setAttribute("otpCode", generatedOTP);
                     session.setAttribute("tempUser", usuario);
@@ -95,7 +92,7 @@ public class LoginServlet extends HttpServlet {
                     
                 } catch (Exception e) {
                     System.err.println("Error enviando OTP: " + e.getMessage());
-                    request.setAttribute("error", "Error al procesar seguridad: " + e.getMessage());
+                    request.setAttribute("error", "Error al enviar el correo: " + e.getMessage());
                     request.getRequestDispatcher("/views/login.jsp").forward(request, response);
                 }
 
@@ -121,7 +118,6 @@ public class LoginServlet extends HttpServlet {
     }
 
     private void enviarOtpPorCorreo(String destinatario, String otp) throws MessagingException {
-        // Mantengo el método por si lo usas localmente, pero en Render no conectará
         final String correoRemitente = "clinipetadso@gmail.com";
         final String claveAplicacion = "qqzopsuxfmdcswmy";
 
@@ -132,8 +128,15 @@ public class LoginServlet extends HttpServlet {
         props.put("mail.smtp.ssl.enable", "true");
         props.put("mail.smtp.socketFactory.port", "465");
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        
+        // Protocolos de seguridad para servidores en la nube
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        
+        // Tiempos de espera aumentados para Render
+        props.put("mail.smtp.connectiontimeout", "15000"); 
+        props.put("mail.smtp.timeout", "15000");
+        props.put("mail.smtp.writetimeout", "15000");
 
         jakarta.mail.Session mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
             @Override
@@ -145,8 +148,8 @@ public class LoginServlet extends HttpServlet {
         Message mensaje = new MimeMessage(mailSession);
         mensaje.setFrom(new InternetAddress(correoRemitente));
         mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-        mensaje.setSubject("Código OTP de verificación");
-        mensaje.setText("Tu código de verificación es: " + otp);
+        mensaje.setSubject("Tu código OTP de seguridad");
+        mensaje.setText("Hola,\n\nTu código de verificación es: " + otp + "\n\nSi no solicitaste este código, ignora este mensaje.");
 
         Transport.send(mensaje);
     }
