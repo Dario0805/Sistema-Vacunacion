@@ -79,11 +79,13 @@ public class LoginServlet extends HttpServlet {
                 String generatedOTP = String.valueOf(OTP_RANDOM.nextInt(900000) + 100000);
 
                 try {
-                    // Envío real al correo
+                    // Envío real al correo con nueva configuración
                     enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
                     
-                    // Log de respaldo en Render
-                    System.out.println("DEBUG OTP ENVIADO A " + usuario.getEmail() + ": " + generatedOTP);
+                    // Log de respaldo (Siempre búscalo en Render Logs)
+                    System.out.println("******************************************");
+                    System.out.println("DEBUG OTP PARA " + usuario.getEmail() + ": " + generatedOTP);
+                    System.out.println("******************************************");
                     
                     session.setAttribute("otpCode", generatedOTP);
                     session.setAttribute("tempUser", usuario);
@@ -92,7 +94,7 @@ public class LoginServlet extends HttpServlet {
                     
                 } catch (Exception e) {
                     System.err.println("Error enviando OTP: " + e.getMessage());
-                    request.setAttribute("error", "Error al enviar el correo: " + e.getMessage());
+                    request.setAttribute("error", "Error de conexión con el correo: " + e.getMessage());
                     request.getRequestDispatcher("/views/login.jsp").forward(request, response);
                 }
 
@@ -122,21 +124,20 @@ public class LoginServlet extends HttpServlet {
         final String claveAplicacion = "qqzopsuxfmdcswmy";
 
         Properties props = new Properties();
+        // --- CAMBIO A PUERTO 587 Y STARTTLS ---
         props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.starttls.required", "true");
         
-        // --- CAMBIOS DE SEGURIDAD PARA RENDER ---
+        // Protocolos de seguridad
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
         
-        // Aumentamos los tiempos por la latencia de red
-        props.put("mail.smtp.connectiontimeout", "20000"); 
-        props.put("mail.smtp.timeout", "20000");
-        props.put("mail.smtp.writetimeout", "20000");
+        // Timeouts ajustados
+        props.put("mail.smtp.connectiontimeout", "15000"); 
+        props.put("mail.smtp.timeout", "15000");
 
         jakarta.mail.Session mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
             @Override
@@ -148,11 +149,12 @@ public class LoginServlet extends HttpServlet {
         Message mensaje = new MimeMessage(mailSession);
         mensaje.setFrom(new InternetAddress(correoRemitente));
         
-        // Convertimos a minúsculas para asegurar compatibilidad total
-        mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario.toLowerCase().trim()));
+        // Limpieza de correo (minúsculas y sin espacios)
+        String emailDestino = destinatario.trim().toLowerCase();
+        mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailDestino));
         
-        mensaje.setSubject("Código de Verificación - Sistema de Vacunación");
-        mensaje.setText("Hola,\n\nTu código de verificación es: " + otp + "\n\nSi no solicitaste este acceso, por favor ignora este mensaje.");
+        mensaje.setSubject("Código de Seguridad - Clinipet");
+        mensaje.setText("Tu código de verificación es: " + otp);
 
         Transport.send(mensaje);
     }
@@ -170,6 +172,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "Servlet para gestionar el inicio de sesión con seguridad OTP para administrador";
+        return "Servlet para gestionar el inicio de sesión con seguridad OTP";
     }
 }
