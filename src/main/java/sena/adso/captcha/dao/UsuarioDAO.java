@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import sena.adso.captcha.dto.Usuario;
 import sena.adso.captcha.model.Conexion;
-import org.mindrot.jbcrypt.BCrypt; // Importación necesaria
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UsuarioDAO {
 
+    // --- MÉTODO DE LOGIN (CON BCRYPT) ---
     public Usuario validarLogin(String username, String password) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -21,10 +22,8 @@ public class UsuarioDAO {
         try {
             username = (username != null) ? username.trim() : "";
             password = (password != null) ? password.trim() : "";
-
             conn = Conexion.getConnection();
             
-            // Buscamos solo por nombre de usuario
             String sql = "SELECT * FROM usuarios WHERE username = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
@@ -32,8 +31,6 @@ public class UsuarioDAO {
 
             if (rs.next()) {
                 String hashedPass = rs.getString("password");
-                
-                // Comparamos la clave ingresada con la de la base de datos
                 if (BCrypt.checkpw(password, hashedPass)) {
                     usuario = mapearUsuario(rs);
                 }
@@ -46,15 +43,138 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    // Métodos de apoyo
+    // --- MÉTODO INSERTAR ---
+    public boolean insertar(Usuario usuario) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        boolean exito = false;
+        try {
+            conn = Conexion.getConnection();
+            String sql = "INSERT INTO usuarios (nombres, apellidos, documento, email, username, password, rol, especialidad, institucion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, usuario.getNombres());
+            stmt.setString(2, usuario.getApellidos());
+            stmt.setString(3, usuario.getDocumento());
+            stmt.setString(4, usuario.getEmail());
+            stmt.setString(5, usuario.getUsername());
+            stmt.setString(6, usuario.getPassword()); // Aquí deberías encriptar si vienes de un registro
+            stmt.setString(7, usuario.getRol());
+            stmt.setString(8, usuario.getEspecialidad());
+            stmt.setString(9, usuario.getInstitucion());
+            exito = stmt.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Error al insertar: " + ex.getMessage());
+        } finally {
+            cerrar(null, stmt, conn);
+        }
+        return exito;
+    }
+
+    // --- MÉTODO ACTUALIZAR ---
+    public boolean actualizar(Usuario usuario) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        boolean exito = false;
+        try {
+            conn = Conexion.getConnection();
+            String sql = "UPDATE usuarios SET nombres=?, apellidos=?, documento=?, email=?, username=?, password=?, rol=?, especialidad=?, institucion=? WHERE id=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, usuario.getNombres());
+            stmt.setString(2, usuario.getApellidos());
+            stmt.setString(3, usuario.getDocumento());
+            stmt.setString(4, usuario.getEmail());
+            stmt.setString(5, usuario.getUsername());
+            stmt.setString(6, usuario.getPassword());
+            stmt.setString(7, usuario.getRol());
+            stmt.setString(8, usuario.getEspecialidad());
+            stmt.setString(9, usuario.getInstitucion());
+            stmt.setInt(10, usuario.getId());
+            exito = stmt.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Error al actualizar: " + ex.getMessage());
+        } finally {
+            cerrar(null, stmt, conn);
+        }
+        return exito;
+    }
+
+    // --- MÉTODO ELIMINAR ---
+    public boolean eliminar(int id) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        boolean exito = false;
+        try {
+            conn = Conexion.getConnection();
+            String sql = "DELETE FROM usuarios WHERE id=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            exito = stmt.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("Error al eliminar: " + ex.getMessage());
+        } finally {
+            cerrar(null, stmt, conn);
+        }
+        return exito;
+    }
+
+    // --- MÉTODO OBTENER TODOS ---
+    public List<Usuario> obtenerTodos() {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Usuario> usuarios = new ArrayList<>();
+        try {
+            conn = Conexion.getConnection();
+            String sql = "SELECT * FROM usuarios ORDER BY apellidos, nombres";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                usuarios.add(mapearUsuario(rs));
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al obtener todos: " + ex.getMessage());
+        } finally {
+            cerrar(rs, stmt, conn);
+        }
+        return usuarios;
+    }
+
+    // --- MÉTODO OBTENER POR ID ---
+    public Usuario obtenerPorId(int id) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Usuario usuario = null;
+        try {
+            conn = Conexion.getConnection();
+            String sql = "SELECT * FROM usuarios WHERE id=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                usuario = mapearUsuario(rs);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al obtener por id: " + ex.getMessage());
+        } finally {
+            cerrar(rs, stmt, conn);
+        }
+        return usuario;
+    }
+
+    // --- MÉTODOS PRIVADOS DE APOYO (MAPEADO Y CIERRE) ---
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getInt("id"));
         usuario.setNombres(rs.getString("nombres"));
         usuario.setApellidos(rs.getString("apellidos"));
+        usuario.setDocumento(rs.getString("documento"));
         usuario.setEmail(rs.getString("email"));
         usuario.setUsername(rs.getString("username"));
+        usuario.setPassword(rs.getString("password"));
         usuario.setRol(rs.getString("rol"));
+        usuario.setEspecialidad(rs.getString("especialidad"));
+        usuario.setInstitucion(rs.getString("institucion"));
         return usuario;
     }
 
@@ -62,9 +182,9 @@ public class UsuarioDAO {
         try {
             if (rs != null) rs.close();
             if (stmt != null) stmt.close();
-            Conexion.closeConnection(conn);
+            if (conn != null) Conexion.closeConnection(conn);
         } catch (SQLException ex) {
-            System.err.println("Error al cerrar: " + ex.getMessage());
+            System.err.println("Error al cerrar recursos: " + ex.getMessage());
         }
     }
 }
