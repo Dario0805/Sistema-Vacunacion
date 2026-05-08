@@ -3,7 +3,6 @@ package sena.adso.captcha.controller;
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet; // Añadido para mapeo
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,12 +16,15 @@ import sena.adso.captcha.dto.Vacuna;
 /**
  * Servlet para el panel de control
  */
-@WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard"})
 public class DashboardServlet extends HttpServlet {
 
     /**
      * Handles the HTTP <code>GET</code> method.
      * Muestra el panel de control
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,65 +33,55 @@ public class DashboardServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         
-        // 1. Verificar si el usuario está autenticado
+        // Verificar si el usuario está autenticado
         if (usuario == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         
-        // 2. Seguridad: Solo permitir acceso al personal médico o enfermero
-        String rol = usuario.getRol();
-        if (!"MEDICO".equals(rol) && !"ENFERMERO".equals(rol)) {
-            // Si tiene un rol no autorizado, cerramos sesión y mandamos al login
-            session.invalidate();
-            response.sendRedirect(request.getContextPath() + "/login?error=no_autorizado");
+        // Solo permitir acceso al personal médico
+        if (!"MEDICO".equals(usuario.getRol()) && !"ENFERMERO".equals(usuario.getRol())) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         
-        // 3. Preparar DAOs
+        // Obtener estadísticas para el dashboard
         RegistroVacunacionDAO registroDAO = new RegistroVacunacionDAO();
         VacunaDAO vacunaDAO = new VacunaDAO();
         
-        try {
-            // 4. Obtener datos de la base de datos
-            List<RegistroVacunacion> ultimosRegistros = registroDAO.obtenerTodos();
-            List<Vacuna> vacunasDisponibles = vacunaDAO.obtenerTodas();
-            
-            // 5. Establecer atributos para el JSP
-            // Pasamos las listas
-            request.setAttribute("registros", ultimosRegistros);
-            request.setAttribute("vacunas", vacunasDisponibles);
-            
-            // Pasamos contadores (si la lista es nula, ponemos 0)
-            request.setAttribute("totalRegistros", (ultimosRegistros != null) ? ultimosRegistros.size() : 0);
-            request.setAttribute("totalVacunas", (vacunasDisponibles != null) ? vacunasDisponibles.size() : 0);
-            
-            // Reforzamos los datos de sesión para el diseño del JSP
-            session.setAttribute("usuarioNombre", usuario.getNombre());
-            session.setAttribute("usuarioRol", usuario.getRol());
-
-            // 6. Redirigir a la vista
-            request.getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
-            
-        } catch (Exception e) {
-            // Manejo básico de errores de base de datos
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al cargar datos del Dashboard");
-        }
+        // Obtener todos los registros para mostrar en tabla
+        List<RegistroVacunacion> ultimosRegistros = registroDAO.obtenerTodos();
+        List<Vacuna> vacunasDisponibles = vacunaDAO.obtenerTodas();
+        
+        request.setAttribute("registros", ultimosRegistros);
+        request.setAttribute("vacunas", vacunasDisponibles);
+        request.setAttribute("totalRegistros", ultimosRegistros.size());
+        request.setAttribute("totalVacunas", vacunasDisponibles.size());
+        
+        // Redirigir al panel de control
+        request.getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // El dashboard es principalmente informativo, redirigimos al GET
+        // Por ahora, el dashboard no procesa peticiones POST
         response.sendRedirect(request.getContextPath() + "/dashboard");
     }
 
+    /**
+     * Returns a short description of the servlet.
+     * @return a String containing servlet description
+     */
     @Override
     public String getServletInfo() {
-        return "Servlet para el panel de control de SaludBoyaca";
+        return "Servlet para el panel de control";
     }
 }
