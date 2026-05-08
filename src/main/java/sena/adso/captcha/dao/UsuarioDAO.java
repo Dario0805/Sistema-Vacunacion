@@ -57,7 +57,7 @@ public class UsuarioDAO {
             stmt.setString(3, usuario.getDocumento());
             stmt.setString(4, usuario.getEmail());
             stmt.setString(5, usuario.getUsername());
-            stmt.setString(6, usuario.getPassword()); // Aquí deberías encriptar si vienes de un registro
+            stmt.setString(6, usuario.getPassword()); 
             stmt.setString(7, usuario.getRol());
             stmt.setString(8, usuario.getEspecialidad());
             stmt.setString(9, usuario.getInstitucion());
