@@ -121,11 +121,17 @@ public class LoginServlet extends HttpServlet {
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "465");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.enable", "true"); // Habilita SSL
+        props.put("mail.smtp.ssl.enable", "true");
         props.put("mail.smtp.socketFactory.port", "465");
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.smtp.connectiontimeout", "5000"); // 5 seg de espera max
-        props.put("mail.smtp.timeout", "5000");
+        
+        // --- CAMBIOS AGREGADOS PARA COMPATIBILIDAD CON RENDER ---
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        // -------------------------------------------------------
+
+        props.put("mail.smtp.connectiontimeout", "10000"); // Aumentado a 10s para mayor margen
+        props.put("mail.smtp.timeout", "10000");
 
         jakarta.mail.Session mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
             @Override
