@@ -12,7 +12,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class UsuarioDAO {
 
-    // --- MÉTODO DE LOGIN (CON BCRYPT) ---
+    // --- 1. VALIDAR LOGIN (Usado por LoginServlet) ---
     public Usuario validarLogin(String username, String password) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -31,19 +31,20 @@ public class UsuarioDAO {
 
             if (rs.next()) {
                 String hashedPass = rs.getString("password");
+                // Compara password plano con el hash de la DB
                 if (BCrypt.checkpw(password, hashedPass)) {
                     usuario = mapearUsuario(rs);
                 }
             }
         } catch (SQLException ex) {
-            System.err.println("Error al validar login: " + ex.getMessage());
+            System.err.println("Error en validarLogin: " + ex.getMessage());
         } finally {
             cerrar(rs, stmt, conn);
         }
         return usuario;
     }
 
-    // --- MÉTODO INSERTAR ---
+    // --- 2. INSERTAR (Usado por UsuarioServlet) ---
     public boolean insertar(Usuario usuario) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -70,7 +71,7 @@ public class UsuarioDAO {
         return exito;
     }
 
-    // --- MÉTODO ACTUALIZAR ---
+    // --- 3. ACTUALIZAR (Usado por UsuarioServlet) ---
     public boolean actualizar(Usuario usuario) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -98,7 +99,7 @@ public class UsuarioDAO {
         return exito;
     }
 
-    // --- MÉTODO ELIMINAR ---
+    // --- 4. ELIMINAR (Usado por UsuarioServlet) ---
     public boolean eliminar(int id) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -117,7 +118,7 @@ public class UsuarioDAO {
         return exito;
     }
 
-    // --- MÉTODO OBTENER TODOS ---
+    // --- 5. OBTENER TODOS (Usado por UsuarioServlet) ---
     public List<Usuario> obtenerTodos() {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -139,7 +140,7 @@ public class UsuarioDAO {
         return usuarios;
     }
 
-    // --- MÉTODO OBTENER POR ID ---
+    // --- 6. OBTENER POR ID (Usado por UsuarioServlet) ---
     public Usuario obtenerPorId(int id) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -162,20 +163,20 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    // --- MÉTODOS PRIVADOS DE APOYO (MAPEADO Y CIERRE) ---
+    // --- MÉTODOS DE APOYO INTERNOS ---
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
-        Usuario usuario = new Usuario();
-        usuario.setId(rs.getInt("id"));
-        usuario.setNombres(rs.getString("nombres"));
-        usuario.setApellidos(rs.getString("apellidos"));
-        usuario.setDocumento(rs.getString("documento"));
-        usuario.setEmail(rs.getString("email"));
-        usuario.setUsername(rs.getString("username"));
-        usuario.setPassword(rs.getString("password"));
-        usuario.setRol(rs.getString("rol"));
-        usuario.setEspecialidad(rs.getString("especialidad"));
-        usuario.setInstitucion(rs.getString("institucion"));
-        return usuario;
+        Usuario u = new Usuario();
+        u.setId(rs.getInt("id"));
+        u.setNombres(rs.getString("nombres"));
+        u.setApellidos(rs.getString("apellidos"));
+        u.setDocumento(rs.getString("documento"));
+        u.setEmail(rs.getString("email"));
+        u.setUsername(rs.getString("username"));
+        u.setPassword(rs.getString("password"));
+        u.setRol(rs.getString("rol"));
+        u.setEspecialidad(rs.getString("especialidad"));
+        u.setInstitucion(rs.getString("institucion"));
+        return u;
     }
 
     private void cerrar(ResultSet rs, PreparedStatement stmt, Connection conn) {
