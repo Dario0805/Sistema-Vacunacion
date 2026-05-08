@@ -78,13 +78,19 @@ public class LoginServlet extends HttpServlet {
             if (requiereOtpAdministrador(usuario)) {
                 String generatedOTP = String.valueOf(OTP_RANDOM.nextInt(900000) + 100000);
 
-                enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
-
-                session.setAttribute("otpCode", generatedOTP);
-                session.setAttribute("tempUser", usuario);
-                session.setAttribute("otpPending", true);
-
-                response.sendRedirect(request.getContextPath() + "/login");
+                try {
+                    enviarOtpPorCorreo(usuario.getEmail(), generatedOTP);
+                    
+                    session.setAttribute("otpCode", generatedOTP);
+                    session.setAttribute("tempUser", usuario);
+                    session.setAttribute("otpPending", true);
+                    response.sendRedirect(request.getContextPath() + "/login");
+                    
+                } catch (Exception e) {
+                    System.err.println("Error enviando OTP: " + e.getMessage());
+                    request.setAttribute("error", "Error al enviar el correo: " + e.getMessage());
+                    request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                }
 
             } else {
                 iniciarSesion(session, usuario);
@@ -98,13 +104,8 @@ public class LoginServlet extends HttpServlet {
     }
 
     private boolean requiereOtpAdministrador(Usuario usuario) {
-        String username = usuario.getUsername() != null
-                ? usuario.getUsername().trim()
-                : "";
-
-        String rol = usuario.getRol() != null
-                ? usuario.getRol().trim()
-                : "";
+        String username = usuario.getUsername() != null ? usuario.getUsername().trim() : "";
+        String rol = usuario.getRol() != null ? usuario.getRol().trim() : "";
 
         return "admin".equalsIgnoreCase(username)
                 || "ADMIN".equalsIgnoreCase(rol)
@@ -112,15 +113,19 @@ public class LoginServlet extends HttpServlet {
                 || "MEDICO".equalsIgnoreCase(rol);
     }
 
-    private void enviarOtpPorCorreo(String destinatario, String otp) throws ServletException {
+    private void enviarOtpPorCorreo(String destinatario, String otp) throws MessagingException {
         final String correoRemitente = "clinipetadso@gmail.com";
         final String claveAplicacion = "qqzopsuxfmdcswmy";
 
         Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.enable", "true"); // Habilita SSL
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.connectiontimeout", "5000"); // 5 seg de espera max
+        props.put("mail.smtp.timeout", "5000");
 
         jakarta.mail.Session mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
             @Override
@@ -129,18 +134,13 @@ public class LoginServlet extends HttpServlet {
             }
         });
 
-        try {
-            Message mensaje = new MimeMessage(mailSession);
-            mensaje.setFrom(new InternetAddress(correoRemitente));
-            mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-            mensaje.setSubject("Código OTP de verificación");
-            mensaje.setText("Tu código de verificación es: " + otp);
+        Message mensaje = new MimeMessage(mailSession);
+        mensaje.setFrom(new InternetAddress(correoRemitente));
+        mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
+        mensaje.setSubject("Código OTP de verificación");
+        mensaje.setText("Tu código de verificación es: " + otp);
 
-            Transport.send(mensaje);
-
-        } catch (MessagingException e) {
-            throw new ServletException("No se pudo enviar el código OTP al correo.", e);
-        }
+        Transport.send(mensaje);
     }
 
     private void iniciarSesion(HttpSession session, Usuario usuario) {
