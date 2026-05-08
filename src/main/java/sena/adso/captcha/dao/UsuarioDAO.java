@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import sena.adso.captcha.dto.Usuario;
 import sena.adso.captcha.model.Conexion;
-import org.mindrot.jbcrypt.BCrypt;
+// BCrypt eliminado para usar texto plano
 
 public class UsuarioDAO {
 
     /**
-     * Valida el login comparando el hash BCrypt de la base de datos
+     * Valida el login comparando la clave en texto plano
      */
     public Usuario validarLogin(String username, String password) {
         Connection conn = null;
@@ -22,30 +22,22 @@ public class UsuarioDAO {
         Usuario usuario = null;
 
         try {
-            // Limpiamos espacios para evitar errores de tipeo
             username = (username != null) ? username.trim() : "";
             password = (password != null) ? password.trim() : "";
             
             conn = Conexion.getConnection();
             
-            // Usamos public.usuarios para asegurar la ruta en PostgreSQL de Render
-            String sql = "SELECT * FROM public.usuarios WHERE username = ?";
+            // Comparamos directamente username y password en la consulta
+            String sql = "SELECT * FROM public.usuarios WHERE username = ? AND password = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
+            stmt.setString(2, password);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                String hashedPass = rs.getString("password");
-                
-                // IMPORTANTE: BCrypt.checkpw compara la clave plana del login 
-                // con el hash $2a$10... que ya veo en tu DBeaver
-                if (BCrypt.checkpw(password, hashedPass)) {
-                    usuario = mapearUsuario(rs);
-                } else {
-                    System.out.println("⚠️ Intento de login fallido: Contraseña no coincide para el usuario: " + username);
-                }
+                usuario = mapearUsuario(rs);
             } else {
-                System.out.println("⚠️ Intento de login fallido: Usuario no encontrado: " + username);
+                System.out.println("⚠️ Intento de login fallido para el usuario: " + username);
             }
         } catch (SQLException ex) {
             System.err.println("❌ Error en validarLogin: " + ex.getMessage());
@@ -68,11 +60,8 @@ public class UsuarioDAO {
             stmt.setString(3, usuario.getDocumento());
             stmt.setString(4, usuario.getEmail());
             stmt.setString(5, usuario.getUsername());
-            
-            // Encriptamos la clave antes de guardarla en la DB
-            String hash = BCrypt.hashpw(usuario.getPassword(), BCrypt.gensalt());
-            stmt.setString(6, hash); 
-            
+            // Guardamos la contraseña tal cual llega (texto plano)
+            stmt.setString(6, usuario.getPassword()); 
             stmt.setString(7, usuario.getRol());
             stmt.setString(8, usuario.getEspecialidad());
             stmt.setString(9, usuario.getInstitucion());
@@ -91,13 +80,6 @@ public class UsuarioDAO {
         boolean exito = false;
         try {
             conn = Conexion.getConnection();
-            
-            // Si la clave ya es un hash, no la re-encriptamos
-            String pass = usuario.getPassword();
-            if (!pass.startsWith("$2a$")) {
-                pass = BCrypt.hashpw(pass, BCrypt.gensalt());
-            }
-
             String sql = "UPDATE public.usuarios SET nombres=?, apellidos=?, documento=?, email=?, username=?, password=?, rol=?, especialidad=?, institucion=? WHERE id=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, usuario.getNombres());
@@ -105,7 +87,7 @@ public class UsuarioDAO {
             stmt.setString(3, usuario.getDocumento());
             stmt.setString(4, usuario.getEmail());
             stmt.setString(5, usuario.getUsername());
-            stmt.setString(6, pass);
+            stmt.setString(6, usuario.getPassword()); // Texto plano
             stmt.setString(7, usuario.getRol());
             stmt.setString(8, usuario.getEspecialidad());
             stmt.setString(9, usuario.getInstitucion());
