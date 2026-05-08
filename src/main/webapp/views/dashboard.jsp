@@ -15,11 +15,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SaludBoyaca - Dashboard</title>
 
-  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
   <style>
@@ -467,7 +464,6 @@
 </head>
 <body>
 
-<!-- ═══ NAVBAR ═══ -->
 <nav class="sb-navbar">
   <a href="${pageContext.request.contextPath}/dashboard" class="sb-logo">
     <div class="sb-logo-icon">
@@ -523,10 +519,8 @@
 </nav>
 
 
-<!-- ═══ MAIN ═══ -->
 <main class="sb-main">
 
-  <!-- HERO BANNER -->
   <div class="sb-hero">
     <div class="sb-hero-left">
       <h1><i class="fas fa-hospital-alt me-2"></i>
@@ -548,16 +542,13 @@
     </div>
   </div>
 
-  <!-- KPI CARDS -->
   <div class="sb-kpi-grid">
-
     <div class="sb-kpi">
       <div class="sb-kpi-accent" style="background:var(--sb-primary);"></div>
       <div class="sb-kpi-icon" style="background:var(--sb-primary);">
         <i class="fas fa-calendar-day"></i>
       </div>
       <div class="sb-kpi-num" style="color:var(--sb-primary);">
-        <%-- Calcular citas de hoy --%>
         <c:set var="citasHoy" value="0"/>
         <c:forEach var="registro" items="${registros}">
           <c:set var="fechaReg">
@@ -574,216 +565,86 @@
       </div>
       <div class="sb-kpi-label"><fmt:message key="dashboard.citasHoy" /></div>
       <div class="sb-kpi-trend" style="color:var(--sb-sena);">
-        <i class="fas fa-arrow-up"></i> <fmt:message key="dashboard.actualizadas" />
+        <i class="fas fa-arrow-up"></i> <fmt:message key="dashboard.alDia" />
       </div>
     </div>
 
-    <div class="sb-kpi">
-      <div class="sb-kpi-accent" style="background:var(--sb-amber);"></div>
-      <div class="sb-kpi-icon" style="background:var(--sb-amber);">
-        <i class="fas fa-clock"></i>
-      </div>
-      <div class="sb-kpi-num" style="color:var(--sb-amber);">${totalRegistros}</div>
-      <div class="sb-kpi-label"><fmt:message key="dashboard.totalRegistros" /></div>
-      <div class="sb-kpi-trend" style="color:var(--sb-amber);">
-        <i class="fas fa-equals"></i> <fmt:message key="dashboard.acumulado" />
-      </div>
     </div>
 
-    <div class="sb-kpi">
-      <div class="sb-kpi-accent" style="background:var(--sb-sena);"></div>
-      <div class="sb-kpi-icon" style="background:var(--sb-sena);">
-        <i class="fas fa-vials"></i>
-      </div>
-      <div class="sb-kpi-num" style="color:var(--sb-sena);">${totalVacunas}</div>
-      <div class="sb-kpi-label"><fmt:message key="dashboard.totalVacunas" /></div>
-      <div class="sb-kpi-trend" style="color:var(--sb-sena);">
-        <i class="fas fa-check-circle"></i> <fmt:message key="dashboard.inventario" />
-      </div>
-    </div>
-
-    <div class="sb-kpi">
-      <div class="sb-kpi-accent" style="background:var(--sb-celeste);"></div>
-      <div class="sb-kpi-icon" style="background:var(--sb-celeste);">
-        <i class="fas fa-calendar-alt"></i>
-      </div>
-      <div class="sb-kpi-num" style="color:var(--sb-celeste); font-size:1.3rem;">
-        <fmt:formatDate value="<%= new java.util.Date() %>" pattern="dd/MM/yyyy"/>
-      </div>
-      <div class="sb-kpi-label"><fmt:message key="dashboard.fechaSistema" /></div>
-      <div class="sb-kpi-trend" style="color:var(--sb-celeste);">
-        <i class="fas fa-sync-alt"></i> <fmt:message key="dashboard.tiempoReal" />
-      </div>
-    </div>
-
-  </div>
-
-  <!-- 2-COL SECTION -->
-  <div class="sb-grid-2">
-
-    <!-- LEFT: Accesos rapidos + OTP strip -->
-    <div class="sb-card">
-      <div class="sb-card-head">
-        <div class="sb-card-title">
-          <div class="sb-card-title-dot" style="background:var(--sb-sena);"></div>
-          <fmt:message key="dashboard.modulosPrincipales" />
-        </div>
-      </div>
-      <div class="sb-card-body">
-
-        <a href="${pageContext.request.contextPath}/registros?accion=nuevo" class="sb-action-item">
-          <div class="sb-action-left">
-            <div class="sb-action-icon" style="background:var(--sb-primary);">
-              <i class="fas fa-clipboard-list"></i>
-            </div>
-            <span class="sb-action-label"><fmt:message key="dashboard.nuevoRegistro" /></span>
-          </div>
-          <span class="sb-action-arrow">&#8250;</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/pacientes?accion=nuevo" class="sb-action-item">
-          <div class="sb-action-left">
-            <div class="sb-action-icon" style="background:var(--sb-sena);">
-              <i class="fas fa-user-plus"></i>
-            </div>
-            <span class="sb-action-label"><fmt:message key="dashboard.nuevoPaciente" /></span>
-          </div>
-          <span class="sb-action-arrow">&#8250;</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/vacunas?accion=nuevo" class="sb-action-item">
-          <div class="sb-action-left">
-            <div class="sb-action-icon" style="background:var(--sb-celeste);">
-              <i class="fas fa-syringe"></i>
-            </div>
-            <span class="sb-action-label"><fmt:message key="dashboard.nuevaVacuna" /></span>
-          </div>
-          <span class="sb-action-arrow">&#8250;</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/usuarios?accion=nuevo" class="sb-action-item">
-          <div class="sb-action-left">
-            <div class="sb-action-icon" style="background:#7F8C8D;">
-              <i class="fas fa-user-md"></i>
-            </div>
-            <span class="sb-action-label"><fmt:message key="dashboard.nuevoUsuario" /></span>
-          </div>
-          <span class="sb-action-arrow">&#8250;</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/consulta" target="_blank" class="sb-action-item">
-          <div class="sb-action-left">
-            <div class="sb-action-icon" style="background:#2C3E50;">
-              <i class="fas fa-search"></i>
-            </div>
-            <span class="sb-action-label"><fmt:message key="menu.consulta" /></span>
-          </div>
-          <span class="sb-action-arrow">&#8250;</span>
-        </a>
-
-      </div>
-
-      <!-- OTP STATUS STRIP -->
-      <div class="sb-otp-strip">
-        <div class="sb-otp-left">
-          <div class="sb-otp-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <div class="sb-otp-text">
-            <h4><fmt:message key="dashboard.sesionAutenticada" /></h4>
-            <p><fmt:message key="dashboard.accesoSeguro" /></p>
-          </div>
-        </div>
-        <div class="sb-otp-badge">&#9679; <fmt:message key="dashboard.activo" /></div>
-      </div>
-    </div>
-
-    <!-- RIGHT: Tabla de registros recientes -->
+  <div class="sb-section">
     <div class="sb-card">
       <div class="sb-card-head">
         <div class="sb-card-title">
           <div class="sb-card-title-dot" style="background:var(--sb-primary);"></div>
-          <fmt:message key="dashboard.ultimosRegistros" />
+          <fmt:message key="menu.registros" /> Recientes
         </div>
-        <a href="${pageContext.request.contextPath}/registros" class="sb-btn-sm">
-          <i class="fas fa-eye"></i> <fmt:message key="dashboard.verTodos" />
-        </a>
+        
+        <c:if test="${sessionScope.usuarioRol != 'ENFERMERO'}">
+            <a href="#" class="sb-btn-sm"><i class="fas fa-plus"></i> <fmt:message key="dashboard.nuevo" /></a>
+        </c:if>
       </div>
-      <div class="sb-table-wrap">
-        <table class="sb-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th><fmt:message key="tabla.paciente" /></th>
-              <th><fmt:message key="tabla.documento" /></th>
-              <th><fmt:message key="tabla.vacuna" /></th>
-              <th><fmt:message key="tabla.fecha" /></th>
-              <th><fmt:message key="tabla.acciones" /></th>
-            </tr>
-          </thead>
-          <tbody>
-            <c:forEach var="registro" items="${registros}">
+      
+      <div class="sb-card-body">
+        <div class="sb-table-wrap">
+          <table class="sb-table">
+            <thead>
               <tr>
-                <td><span class="sb-record-id">#${registro.id}</span></td>
-                <td><strong>${registro.nombrePaciente}</strong></td>
-                <td>${registro.documentoPaciente}</td>
-                <td>${registro.nombreVacuna} <small style="color:var(--sb-muted);">(${registro.loteVacuna})</small></td>
-                <td><fmt:formatDate value="${registro.fechaVacunacion}" pattern="dd/MM/yyyy HH:mm"/></td>
-                <td>
-                  <div class="sb-action-btns">
-                    <a href="${pageContext.request.contextPath}/registros?accion=editar&id=${registro.id}"
-                       class="sb-btn-icon btn-edit" title="<fmt:message key='accion.editar' />">
-                      <i class="fas fa-edit"></i>
-                    </a>
-                    <button class="sb-btn-icon btn-del" title="<fmt:message key='accion.eliminar' />"
-                            onclick="confirmarEliminar(${registro.id}, '${registro.nombrePaciente}')">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </td>
+                <th>ID</th>
+                <th>PACIENTE</th>
+                <th>VACUNA</th>
+                <th>FECHA</th>
+                <th>ESTADO</th>
+                <th>ACCIONES</th>
               </tr>
-            </c:forEach>
-            <c:if test="${empty registros}">
-              <tr>
-                <td colspan="6" style="text-align:center;padding:28px;color:var(--sb-muted);">
-                  <i class="fas fa-inbox" style="font-size:24px;display:block;margin-bottom:8px;"></i>
-                  <fmt:message key="dashboard.noRegistros" />
-                </td>
-              </tr>
-            </c:if>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <c:forEach var="reg" items="${registros}">
+                <tr>
+                  <td><span class="sb-record-id">#${reg.id}</span></td>
+                  <td><strong>${reg.pacienteNombre}</strong></td>
+                  <td>${reg.vacunaNombre}</td>
+                  <td><fmt:formatDate value="${reg.fechaVacunacion}" pattern="dd/MM/yyyy"/></td>
+                  <td><span class="sb-badge confirmada">Atendido</span></td>
+                  <td class="sb-action-btns">
+                    <button class="sb-btn-icon btn-view"><i class="fas fa-eye"></i></button>
+                    
+                    <c:if test="${sessionScope.usuarioRol != 'ENFERMERO'}">
+                        <button class="sb-btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                        <button class="sb-btn-icon btn-del"><i class="fas fa-trash"></i></button>
+                    </c:if>
+                  </td>
+                </tr>
+              </c:forEach>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-
   </div>
 
-  <!-- VACUNAS SECTION -->
   <div class="sb-section">
     <div class="sb-card">
       <div class="sb-card-head">
         <div class="sb-card-title">
           <div class="sb-card-title-dot" style="background:var(--sb-celeste);"></div>
-          <fmt:message key="dashboard.inventarioReciente" />
+          Disponibilidad de Biológicos
         </div>
-        <a href="${pageContext.request.contextPath}/vacunas" class="sb-btn-sm">
-          <i class="fas fa-boxes"></i> <fmt:message key="dashboard.gestionar" />
-        </a>
       </div>
       <div class="sb-card-body">
         <div class="sb-spec-grid">
-          <c:forEach var="vacuna" items="${vacunas}" end="4">
-            <div class="sb-spec-card">
-              <div class="sb-spec-lote" style="background:var(--sb-primary);">${vacuna.lote}</div>
-              <div class="sb-spec-name">${vacuna.nombre}</div>
-              <div class="sb-spec-row"><i class="fas fa-flask me-1"></i>${vacuna.laboratorio}</div>
-              <div class="sb-spec-row"><i class="fas fa-calendar-times me-1"></i><fmt:message key="dashboard.vence" />: ${vacuna.fechaVencimiento}</div>
-            </div>
-          </c:forEach>
-          <div class="sb-spec-add" onclick="location.href='${pageContext.request.contextPath}/vacunas?accion=nuevo'">
-            <div class="sb-spec-add-plus">+</div>
-            <div class="sb-spec-add-label"><fmt:message key="dashboard.nuevaVacuna" /></div>
-          </div>
+           <div class="sb-spec-card">
+              <span class="sb-spec-lote" style="background:var(--sb-sena);">LOTE: AB123</span>
+              <div class="sb-spec-name">Pfizer-BioNTech</div>
+              <div class="sb-spec-row"><i class="fas fa-box me-1"></i> Stock: 150 dosis</div>
+              <div class="sb-spec-row"><i class="fas fa-calendar-times me-1"></i> Vence: 12/2026</div>
+           </div>
+
+           <c:if test="${sessionScope.usuarioRol != 'ENFERMERO'}">
+               <div class="sb-spec-add">
+                  <div class="sb-spec-add-plus">+</div>
+                  <div class="sb-spec-add-label">Añadir Biológico</div>
+               </div>
+           </c:if>
         </div>
       </div>
     </div>
@@ -791,77 +652,23 @@
 
 </main>
 
-
-<!-- FOOTER -->
 <footer class="sb-footer">
-  SENA &nbsp;&middot;&nbsp; Centro Industrial de Mantenimiento y Manufactura - CIMM
-  &nbsp;&middot;&nbsp; Regional Boyaca &nbsp;&middot;&nbsp; Tecnologo ADSO &nbsp;&middot;&nbsp; 2026
-  &nbsp;|&nbsp; SaludBoyaca v1.0
+  <div>&copy; 2026 SaludBoyaca - Sistema Integrado de Vacunación</div>
+  <div class="mt-1">Secretaría de Salud de Boyacá - Desarrollo ADSO</div>
 </footer>
 
-
-<!-- MODAL ELIMINAR -->
-<div class="modal fade" id="eliminarModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content border-0 rounded-4">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">
-          <i class="fas fa-trash me-2"></i> <fmt:message key="modal.eliminarRegistro" />
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p><fmt:message key="modal.confirmarEliminar" /></p>
-        <p class="text-danger mb-0"><strong id="nombrePaciente"></strong></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><fmt:message key="accion.cancelar" /></button>
-        <a href="#" id="btnConfirmarEliminar" class="btn btn-danger"><fmt:message key="accion.eliminar" /></a>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-  /* Fecha en vivo en el hero */
-  (function () {
-    var d = new Date();
-    var lang = '${sessionScope.locale.language}';
-
-    var dias = {
-      es: ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'],
-      en: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-      fr: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
-      it: ['Domenica','Lunedi','Martedi','Mercoledi','Giovedi','Venerdi','Sabato']
-    };
-
-    var meses = {
-      es: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
-      en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-      fr: ['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'],
-      it: ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
-    };
-
-    if (!dias[lang]) {
-      lang = 'es';
-    }
-
-    document.getElementById('hero-day').textContent   = d.getDate();
-    document.getElementById('hero-month').textContent = meses[lang][d.getMonth()] + ' ' + d.getFullYear();
-    document.getElementById('hero-dow').textContent   = dias[lang][d.getDay()];
-  })();
-
-  /* Modal eliminar */
-  function confirmarEliminar(id, nombre) {
-    document.getElementById('nombrePaciente').textContent = nombre;
-    document.getElementById('btnConfirmarEliminar').href =
-      '${pageContext.request.contextPath}/registros?accion=eliminar&id=' + id;
-    new bootstrap.Modal(document.getElementById('eliminarModal')).show();
-  }
+  // Script para actualizar la fecha del Hero Banner
+  const updateHeroDate = () => {
+    const now = new Date();
+    const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    
+    document.getElementById('hero-day').innerText = now.getDate().toString().padStart(2, '0');
+    document.getElementById('hero-month').innerText = months[now.getMonth()];
+    document.getElementById('hero-dow').innerText = days[now.getDay()];
+  };
+  updateHeroDate();
 </script>
 
 </body>
