@@ -12,7 +12,9 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class UsuarioDAO {
 
-    // --- 1. VALIDAR LOGIN (Usado por LoginServlet) ---
+    /**
+     * Valida el login comparando el hash BCrypt de la base de datos
+     */
     public Usuario validarLogin(String username, String password) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -31,7 +33,7 @@ public class UsuarioDAO {
 
             if (rs.next()) {
                 String hashedPass = rs.getString("password");
-                // Compara password plano con el hash de la DB
+                // Comparamos la clave plana ingresada con el hash de Render
                 if (BCrypt.checkpw(password, hashedPass)) {
                     usuario = mapearUsuario(rs);
                 }
@@ -44,7 +46,6 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    // --- 2. INSERTAR (Usado por UsuarioServlet) ---
     public boolean insertar(Usuario usuario) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -58,20 +59,20 @@ public class UsuarioDAO {
             stmt.setString(3, usuario.getDocumento());
             stmt.setString(4, usuario.getEmail());
             stmt.setString(5, usuario.getUsername());
+            // Nota: Aquí se guarda como llega del Servlet (plana o encriptada según decidas)
             stmt.setString(6, usuario.getPassword()); 
             stmt.setString(7, usuario.getRol());
             stmt.setString(8, usuario.getEspecialidad());
             stmt.setString(9, usuario.getInstitucion());
             exito = stmt.executeUpdate() > 0;
         } catch (SQLException ex) {
-            System.err.println("Error al insertar: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
             cerrar(null, stmt, conn);
         }
         return exito;
     }
 
-    // --- 3. ACTUALIZAR (Usado por UsuarioServlet) ---
     public boolean actualizar(Usuario usuario) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -92,14 +93,13 @@ public class UsuarioDAO {
             stmt.setInt(10, usuario.getId());
             exito = stmt.executeUpdate() > 0;
         } catch (SQLException ex) {
-            System.err.println("Error al actualizar: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
             cerrar(null, stmt, conn);
         }
         return exito;
     }
 
-    // --- 4. ELIMINAR (Usado por UsuarioServlet) ---
     public boolean eliminar(int id) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -111,14 +111,13 @@ public class UsuarioDAO {
             stmt.setInt(1, id);
             exito = stmt.executeUpdate() > 0;
         } catch (SQLException ex) {
-            System.err.println("Error al eliminar: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
             cerrar(null, stmt, conn);
         }
         return exito;
     }
 
-    // --- 5. OBTENER TODOS (Usado por UsuarioServlet) ---
     public List<Usuario> obtenerTodos() {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -133,14 +132,13 @@ public class UsuarioDAO {
                 usuarios.add(mapearUsuario(rs));
             }
         } catch (SQLException ex) {
-            System.err.println("Error al obtener todos: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
             cerrar(rs, stmt, conn);
         }
         return usuarios;
     }
 
-    // --- 6. OBTENER POR ID (Usado por UsuarioServlet) ---
     public Usuario obtenerPorId(int id) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -156,14 +154,13 @@ public class UsuarioDAO {
                 usuario = mapearUsuario(rs);
             }
         } catch (SQLException ex) {
-            System.err.println("Error al obtener por id: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
             cerrar(rs, stmt, conn);
         }
         return usuario;
     }
 
-    // --- MÉTODOS DE APOYO INTERNOS ---
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         Usuario u = new Usuario();
         u.setId(rs.getInt("id"));
