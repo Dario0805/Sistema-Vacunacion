@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%-- CORRECCIÓN: URIs de Jakarta para Tomcat 10 --%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <c:if test="${empty sessionScope.locale}">
     <c:set var="locale" value="es" scope="session" />
@@ -10,7 +11,8 @@
 <fmt:setBundle basename="messages" />
 
 <!DOCTYPE html>
-<html lang="${sessionScope.locale.language}">
+<html lang="${sessionScope.locale}">
+<%-- El resto del código permanece igual --%>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
